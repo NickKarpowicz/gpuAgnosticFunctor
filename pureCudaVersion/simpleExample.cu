@@ -39,13 +39,12 @@ int main(){
     }
     cudaDeviceSynchronize();
     cudaMemcpy(cpuA.data(),deviceA,vectorSize*sizeof(float),cudaMemcpyDeviceToHost);
-    for(int i = 0; i<10; ++i){
-        std::cout << i << ": " << cpuA[i] <<"\n"; 
-    }
     cudaFree(deviceA);
     cudaFree(deviceB);
     
     auto timerEnd = std::chrono::high_resolution_clock::now();
+
+
 
     std::cout << 
     "Took " << 
@@ -53,4 +52,7 @@ int main(){
         std::chrono::duration_cast<std::chrono::microseconds>
         (timerEnd - timerBegin).count()) << 
         " ms\n";
+    for(int i = 0; i<3; ++i){
+        std::cout << i << ": " << cpuA[i] <<"\n"; 
+    }
 }

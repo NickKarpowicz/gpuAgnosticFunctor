@@ -1,23 +1,15 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
-#ifdef __CUDACC__
-    #include "cudaDeviceHeader.cuh"
+#ifdef USECUDA
+    #include "cudaDevice.cuh"
     typedef CUDAdevice device;
-//#elif defined USESYCL
-#else
-    #include "syclDeviceHeader.hpp"
+#elif defined USESYCL
+    #include "syclDevice.hpp"
     typedef SYCLdevice device;    
-
-    std::cout << "Scanning for devices...\n";
-    for (const auto& p : sycl::platform::get_platforms()) {
-        for (const auto& d : p.get_devices()) {
-            std::cout << "Found: " << d.get_info<sycl::info::device::name>() << '\n';
-        }
-    }
-// #else
-//     #include "ompDeviceHeader.hpp"
-//     typedef OMPdevice device;
+#else
+     #include "ompDevice.hpp"
+     typedef OMPdevice device;
 #endif
 
 class setValues{
@@ -78,7 +70,7 @@ int main(){
         (timerEnd - timerBegin).count()) << 
         " ms\n";
 
-    for(int i = 0; i<10; ++i){
+    for(int i = 0; i<3; ++i){
         std::cout << i << ": " << cpuA[i] <<"\n"; 
     }
 }

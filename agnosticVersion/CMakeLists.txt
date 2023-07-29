@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(AgnosticFunctor)
+project(AgnosticFunctor LANGUAGES CXX)
 option(BUILD_CUDA "Build the CUDA version" OFF)
 option(BUILD_OMP "Build the OMP version" OFF)
 option(BUILD_SYCL "Build the SYCL version" OFF)
@@ -8,7 +8,9 @@ option(BUILD_SYCL "Build the SYCL version" OFF)
 #cmake -DCMAKE_CUDA_HOST_COMPILER=clang++-15 -DBUILD_CUDA=ON ..
 if(BUILD_CUDA)
     enable_language("CUDA")
+    add_compile_options(-D USECUDA)
     add_executable(demoCUDA simpleExample.cu)
+    
 endif(BUILD_CUDA)
 
 #example usage:
@@ -23,11 +25,10 @@ endif(BUILD_OMP)
 # . /opt/intel/oneapi/setvars.sh
 # cmake -DONEAPI_ROOT=${ONEAPI_ROOT}  -DCMAKE_CXX_COMPILER=icpx -DBUILD_SYCL=ON ..
 if(BUILD_SYCL)
-    if(UNIX)
-        set(SYCL_INCLUDE_DIR "${ONEAPI_ROOT}/compiler/latest/linux/include/sycl")
-        set(SYCL_LIBRARY_DIR "${ONEAPI_ROOT}/compiler/latest/linux/lib")
-    endif(UNIX)
+    set(SYCL_LIBRARY_DIR "${ONEAPI_ROOT}/compiler/latest/linux/lib")
     link_directories(${SYCL_LIBRARY_DIR})
+    add_compile_options(-std=c++20 -fsycl -D USESYCL)
+    add_link_options(-fsycl)
     add_executable(demoSYCL simpleExample.cpp)
-    add_compile_options(-fsycl -D USESYCL)
+    target_link_libraries(demoSYCL -lsycl -lOpenCL)
 endif(BUILD_SYCL)

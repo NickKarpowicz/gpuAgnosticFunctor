@@ -4,12 +4,20 @@
 #ifdef __CUDACC__
     #include "cudaDeviceHeader.cuh"
     typedef CUDAdevice device;
-#elif defined USESYCL
+//#elif defined USESYCL
+#else
     #include "syclDeviceHeader.hpp"
     typedef SYCLdevice device;    
-#else
-    #include "ompDeviceHeader.hpp"
-    typedef OMPdevice device;
+
+    std::cout << "Scanning for devices...\n";
+    for (const auto& p : sycl::platform::get_platforms()) {
+        for (const auto& d : p.get_devices()) {
+            std::cout << "Found: " << d.get_info<sycl::info::device::name>() << '\n';
+        }
+    }
+// #else
+//     #include "ompDeviceHeader.hpp"
+//     typedef OMPdevice device;
 #endif
 
 class setValues{

@@ -23,8 +23,10 @@ endif(BUILD_OMP)
 # . /opt/intel/oneapi/setvars.sh
 # cmake -DONEAPI_ROOT=${ONEAPI_ROOT}  -DCMAKE_CXX_COMPILER=icpx -DBUILD_SYCL=ON ..
 if(BUILD_SYCL)
-    set(SYCL_INCLUDE_DIR "${ONEAPI_ROOT}/compiler/latest/linux/include/sycl")
-    set(SYCL_LIBRARY_DIR "${ONEAPI_ROOT}/compiler/latest/linux/lib")
+    if(UNIX)
+        set(SYCL_INCLUDE_DIR "${ONEAPI_ROOT}/compiler/latest/linux/include/sycl")
+        set(SYCL_LIBRARY_DIR "${ONEAPI_ROOT}/compiler/latest/linux/lib")
+    endif(UNIX)
     link_directories(${SYCL_LIBRARY_DIR})
     add_executable(demoSYCL simpleExample.cpp)
     add_compile_options(-fsycl -D USESYCL)

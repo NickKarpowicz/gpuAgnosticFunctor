@@ -41,8 +41,8 @@ public:
 };
 
 int main(){
-    unsigned int vectorSize = 65536;
-    unsigned int repetitions = 65536;
+    unsigned int vectorSize = 8192*65536;
+    unsigned int repetitions = 32;
     unsigned int Nthreads = 64;
     unsigned int Nblocks = vectorSize/Nthreads;
     float* deviceA;
@@ -54,7 +54,7 @@ int main(){
     d.Malloc((void**)&deviceA, vectorSize * sizeof(float));
     d.Malloc((void**)&deviceB, vectorSize * sizeof(float));
     d.LaunchKernel(Nblocks, Nthreads, setValues{deviceA, deviceB});
-    for(int i = 0; i< repetitions; ++i){
+    for(unsigned int i = 0; i < repetitions; ++i){
         d.LaunchKernel(Nblocks, Nthreads, multiplyAbyB{deviceA, deviceB});
         d.LaunchKernel(Nblocks, Nthreads, divideAbyB{deviceA, deviceB});
     }

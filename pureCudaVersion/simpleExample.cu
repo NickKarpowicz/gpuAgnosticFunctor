@@ -20,8 +20,8 @@ __global__ void divideAbyB(float* A, float* B){
 }
 
 int main(){
-    unsigned int vectorSize = 65536;
-    unsigned int repetitions = 65536;
+    unsigned int vectorSize = 8192*65536;
+    unsigned int repetitions = 32;
     unsigned int Nthreads = 64;
     unsigned int Nblocks = vectorSize/Nthreads;
     float* deviceA;
@@ -33,7 +33,7 @@ int main(){
     cudaMalloc(&deviceA, vectorSize * sizeof(float));
     cudaMalloc(&deviceB, vectorSize * sizeof(float));
     setValues<<<Nblocks, Nthreads>>>(deviceA, deviceB);
-    for(int i = 0; i< repetitions; ++i){
+    for(unsigned int i = 0; i < repetitions; ++i){
         multiplyAbyB<<<Nblocks, Nthreads>>>(deviceA, deviceB);
         divideAbyB<<<Nblocks, Nthreads>>>(deviceA, deviceB);
     }

@@ -40,7 +40,8 @@ public:
     }
 };
 
-int main(){
+int main()
+{
     unsigned int vectorSize = 8192*65536;
     unsigned int repetitions = 32;
     unsigned int Nthreads = 64;
@@ -48,13 +49,14 @@ int main(){
     float* deviceA;
     float* deviceB;
     std::vector<float> cpuA(vectorSize, 0.0f);
-
+    
     auto timerBegin = std::chrono::high_resolution_clock::now();
+
     device d;
     d.Malloc((void**)&deviceA, vectorSize * sizeof(float));
     d.Malloc((void**)&deviceB, vectorSize * sizeof(float));
     d.LaunchKernel(Nblocks, Nthreads, setValues{deviceA, deviceB});
-    for(unsigned int i = 0; i < repetitions; ++i){
+    for(int i = 0; i < repetitions; ++i){
         d.LaunchKernel(Nblocks, Nthreads, multiplyAbyB{deviceA, deviceB});
         d.LaunchKernel(Nblocks, Nthreads, divideAbyB{deviceA, deviceB});
     }
@@ -63,13 +65,14 @@ int main(){
     d.Free(deviceB);
 
     auto timerEnd = std::chrono::high_resolution_clock::now();
+
     std::cout << 
     "Took " << 
     1e-3 * static_cast<double>(
         std::chrono::duration_cast<std::chrono::microseconds>
         (timerEnd - timerBegin).count()) << 
-        " ms\n";
-
+    " ms\n";
+    
     for(int i = 0; i<3; ++i){
         std::cout << i << ": " << cpuA[i] <<"\n"; 
     }

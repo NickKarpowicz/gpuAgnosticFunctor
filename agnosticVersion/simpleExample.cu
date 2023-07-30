@@ -49,10 +49,10 @@ int main()
     float* deviceA;
     float* deviceB;
     std::vector<float> cpuA(vectorSize, 0.0f);
-    
+    device d;
     auto timerBegin = std::chrono::high_resolution_clock::now();
 
-    device d;
+    
     d.Malloc((void**)&deviceA, vectorSize * sizeof(float));
     d.Malloc((void**)&deviceB, vectorSize * sizeof(float));
     d.LaunchKernel(Nblocks, Nthreads, setValues{deviceA, deviceB});

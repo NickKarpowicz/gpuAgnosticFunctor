@@ -5,10 +5,10 @@
 
 
 class SYCLdevice{
-    sycl::queue stream;
+    sycl::queue queue;
 public:
     SYCLdevice(){
-        stream = sycl::queue{ sycl::default_selector_v, sycl::property::queue::in_order() };
+        queue = sycl::queue{ sycl::default_selector_v, sycl::property::queue::in_order() };
         std::cout << "Scanning for devices...\n";
         for (const auto& p : sycl::platform::get_platforms()) {
             for (const auto& d : p.get_devices()) {
@@ -17,26 +17,26 @@ public:
         }
     }
     int Malloc(void** ptr, const int64_t N) {
-		(*ptr) = sycl::malloc_device(N, stream.get_device(), stream.get_context());
-		stream.wait();
+		(*ptr) = sycl::malloc_device(N, queue.get_device(), queue.get_context());
+		queue.wait();
 		return 0;
 	}
 
     void MemcpyDeviceToHost(void* dst, const void* src, const int64_t count) {
-		stream.wait();
-		stream.memcpy(dst, src, count);
-		stream.wait();
+		queue.wait();
+		queue.memcpy(dst, src, count);
+		queue.wait();
 	}
 
     void Free(void* block) {
-		stream.wait();
-		sycl::free(block, stream);
+		queue.wait();
+		sycl::free(block, queue);
 	}
 
     template <typename T>
     void LaunchKernel(const unsigned int Nblock, const unsigned int Nthread, const T& functor) {
         auto i = Nblock * Nthread;
-        stream.submit([&](sycl::handler& h) {
+        queue.submit([&](sycl::handler& h) {
             h.parallel_for(i, functor);
             });
     }
